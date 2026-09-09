@@ -2,10 +2,10 @@
 
 export const dummyUser = {
     id: "user_mock_001",
-    fullName: "Alex Rivera",
-    firstName: "Alex",
-    lastName: "Rivera",
-    name: "Alex Rivera",
+    fullName: "Big Enzo",
+    firstName: "Big",
+    lastName: "Enzo",
+    name: "Big Enzo",
     primaryEmailAddress: {
         emailAddress: "alex.rivera@example.com",
     },
