@@ -7,7 +7,7 @@ export const dummyUser = {
     lastName: "Enzo",
     name: "Big Enzo",
     primaryEmailAddress: {
-        emailAddress: "alex.rivera@example.com",
+        emailAddress: "enzo@gmail.com",
     },
     imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
 };
@@ -31,13 +31,13 @@ export const dummySessions = [
         endedAt: "2026-08-14T10:45:00.000Z",
         host: {
             id: "user_mock_001",
-            name: "Alex Rivera",
+            name: "Big Enzo",
             email: "alex.rivera@example.com",
         },
         participants: [
             {
-                user: { id: "user_mock_001", email: "alex.rivera@example.com" },
-                name: "Alex Rivera",
+                user: { id: "user_mock_001", email: "Abdulsamad@gmail.com" },
+                name: "Abdlsamad",
                 joinedAt: "2026-08-14T09:30:00.000Z",
                 leftAt: "2026-08-14T10:45:00.000Z",
             },
@@ -64,7 +64,7 @@ export const dummySessions = [
             {
                 id: "m1",
                 senderId: "user_mock_001",
-                senderName: "Alex Rivera",
+                senderName: "Big Enzo",
                 text: "Welcome everyone! Let's kick off with the Q3 milestone updates.",
                 timestamp: "2026-08-14T09:31:00.000Z",
             },
@@ -112,7 +112,7 @@ export const dummySessions = [
             },
             {
                 user: { id: "user_mock_001", email: "alex.rivera@example.com" },
-                name: "Alex Rivera",
+                name: "Big Enzo",
                 joinedAt: "2026-08-14T14:16:30.000Z",
                 leftAt: null,
             },
