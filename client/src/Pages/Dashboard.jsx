@@ -26,7 +26,7 @@ const Dashboard = () => {
       setIsCreating(true)
       const chars = "abdcefghijklmnopqrestuvwxyz1234567890"
       const seg = () => Array.from({length: 3}, ()=> chars[Math.floor(Math.random() * chars.length)]).join("");
-      const newMeetingId = `${seg()}-${seg()}-${seg()}`;
+      const newMeetingId = `${seg()}|${seg()}|${seg()}`;
 
       setTimeout(() => {
         setIsCreating(false)
@@ -39,12 +39,12 @@ const Dashboard = () => {
       e.preventDefault();
       const cleanId = joinId.trim();
 
-      if (!cleanId){
+      if (!/^[a-z]{3}(?:-[a-z]{3}){2}$/.test(cleanId)){
         toast.error("Enter a Valid Room ID");
         return;
       }
 
-      navigate(`/meeting/${cleanId}`)
+      navigate(`/meeting/${encodeURIComponent(cleanId)}`)
     }
 
 
