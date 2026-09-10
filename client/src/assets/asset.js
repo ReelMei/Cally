@@ -181,7 +181,7 @@ export const dummySessions = [
 export const dummyMeetingDetails = {
     id: 101,
     meetingId: "abc-def-ghi",
-    title: "Instant Meeting",
+    title: "Meeting Room",
     status: "active",
     createdAt: new Date().toISOString(),
     host: {
@@ -195,7 +195,7 @@ export const dummyRemoteParticipants = [
     {
         socketId: "socket_sarah_002",
         userId: "user_mock_002",
-        userName: "Sarah Chen",
+        userName: "AbdulSamad",
         stream: null,
         audioEnabled: true,
         videoEnabled: true,
@@ -203,7 +203,7 @@ export const dummyRemoteParticipants = [
     {
         socketId: "socket_marcus_003",
         userId: "user_mock_003",
-        userName: "Marcus Vance",
+        userName: "JAGO",
         stream: null,
         audioEnabled: false,
         videoEnabled: true,
@@ -211,7 +211,7 @@ export const dummyRemoteParticipants = [
     {
         socketId: "socket_elena_004",
         userId: "user_mock_004",
-        userName: "Elena Rostova",
+        userName: "Aurthur",
         stream: null,
         audioEnabled: true,
         videoEnabled: false,
