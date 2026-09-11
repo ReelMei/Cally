@@ -222,14 +222,14 @@ export const dummyInitialChatMessages = [
     {
         id: "chat_01",
         senderId: "user_mock_002",
-        senderName: "Sarah Chen",
-        text: "Hey Alex! Can you hear me clearly?",
+        senderName: "AbdulSamad",
+        text: "Hey Jago! Can you hear me clearly?",
         time: "02:15 PM",
     },
     {
         id: "chat_02",
         senderId: "user_mock_003",
-        senderName: "Marcus Vance",
+        senderName: "Jago",
         text: "Loud and clear! Ready for the walkthrough.",
         time: "02:16 PM",
     },

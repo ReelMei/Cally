@@ -1,10 +1,89 @@
-import React from 'react'
+import { Send, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 
-const ChatPanel = () => {
+const ChatPanel = ({isOpen, onClose, messages, onSendMessage, currentUser}) => {
+
+  const [text, setText] = useState("");
+  const messageEndRef = useRef(null)
+
+  useEffect(() => {
+    if(isOpen){
+      messageEndRef.current?.scrollIntoView({behavior: "smooth"})
+    }
+  },[messages, isOpen])
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if(text.trim()){
+      onSendMessage(text);
+      setText("");
+    }
+  }
+
+  if(!isOpen) return null;
+
   return (
-    <div>
-      
-    </div>
+    <div className='w-full sm:w-80 h-full bg-transparent border border-slate-300 flex flex-col shadow-2xl z-30 animate-in slide-in-from-right duration-200 shrink-0'>
+      {/* Heading */}
+      <div className='p-4 border-b border-slate-200 flex items-center justify-between'>
+        <h3 className='font-medium text-slate-900 text-base flex items-center gap-2'>Room Chat</h3>
+        <button
+        onClick={onClose} 
+        className='p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer'
+        >
+          <X className='w-5 h-5'/>
+        </button>
+        </div>
+
+              {/* Message Section */}
+         <div className='flex-1 p-4 overflow-y-auto space-y-4'>
+          {messages.length === 0 ? (
+            <div className='flex h-full flex-col items-center justify-center text-center text-slate-400 text-sm'>
+              <p>No Convo Yet.</p>
+              <p className='text-xs mt-1 text-slate-400'>Click send a message and get started.</p>
+            </div>
+          ) : (
+            messages.map((msg, index) => {
+              const isMe = msg.senderId === currentUser?.id;
+              return (
+                <div
+                key={msg.id || index}
+                className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                >
+                  <div className='flex items-center gap-2 mb-1'>
+                    <span className='text-xs font-bold text-black  '>
+                      {isMe ? "Me" : msg.senderName}
+                    </span>
+                    <span className='text-[10px] text-black '>
+                      {msg.time}
+                    </span>
+                  </div>
+                  <div className={`px-3.5 py-2.5 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-xs ${isMe ? "bg-primary text-white rounded-tr-none font-medium" : "bg-slate-100 text-slate-800 rounded-tl-none border border-slate-200 font-medium"}`}>
+                    {msg.text}
+                  </div>
+                </div>
+              )
+            })
+          )}
+          <div ref={messageEndRef}/>
+         </div>
+
+          {/* Form For Send */}
+         <form action="" onSubmit={handleSubmit} className='p-3 border-t border-slate-200 bg-slate-50 flex items-center gap-2'>
+           <input 
+           type="text" 
+           placeholder='Start Messaging'
+           value={text}
+           onChange={(e) => setText(e.target.value)} 
+           className='flex-1 bg-white border border-primary-border/80 focus:border-primary rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all shadow-xs'/>
+
+           <button type='submit' disabled={!text.trim()} className='p-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white disbaled:opacity-40 transition-all cursor-pointer shadow-xs'>
+             <Send className='w-4 h-4'/>
+           </button>
+
+         </form>
+      </div>
+    
   )
 }
 
