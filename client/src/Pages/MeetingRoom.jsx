@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { dummyMeetingDetails, dummyUser } from '../assets/asset'
 import VideoGrid from '../Components/Meeting/VideoGrid'
 import useWebRTC from '../Hooks/useWebRTC'
+import ChatPanel from '../Components/Meeting/ChatPanel'
+import { useChat } from '../Hooks/UseChat'
 
 const MeetingRoom = () => {
 
@@ -19,6 +21,9 @@ const MeetingRoom = () => {
   //Initialize WebRTC
   const {localStream, remoteUsers, audioEnabled, videoEnabled, toggleAudio, toggleVideo, endMeeting} = useWebRTC(meetingId, userData, handleMeetingEnded)
 
+  //Initialize Room Chat
+  const {messages, sendMessage, unreadCount, isChatOPen, toogleChat} =useChat(meetingId, userData)
+
 
 
   const isHost = true;
@@ -33,7 +38,7 @@ const MeetingRoom = () => {
 
 
   return (
-    <div className='h-screen w-screen bg-slate-100 text-slate-900 flex flex-col overflow-hidden relative font-sans'>
+    <div className="h-screen w-screen  bg-[url('/mylogin_bg.jpg')] bg-cover text-slate-900 flex flex-col overflow-hidden relative font-sans">
      
      {/*Top Bar */}
      <div className='w-full bg-white/90 backdrop-blur px-6 py-3 border-b border-slate-300 flex items-center justify-between z-30 shadow-x'>
@@ -60,7 +65,13 @@ const MeetingRoom = () => {
 
 
           {/* In-Meeting Chat */}
-          
+          <ChatPanel 
+          isOpen={isChatOPen}
+          onClose={toogleChat}
+          messages={messages}
+          onSendMessage={sendMessage}
+          currentUser={userData}
+          />
 
 
            {/* Participant Drawer */}
