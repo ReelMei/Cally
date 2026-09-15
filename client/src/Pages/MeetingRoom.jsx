@@ -24,7 +24,7 @@ const MeetingRoom = () => {
   const {localStream, remoteUsers, audioEnabled, videoEnabled, toggleAudio, toggleVideo, endMeeting} = useWebRTC(meetingId, userData, handleMeetingEnded)
 
   //Initialize Room Chat
-  const {messages, sendMessage, unreadCount, isChatOPen, toogleChat} = useChat(meetingId, userData)
+  const {messages, sendMessage, unreadCount, isChatOpen, toogleChat} = useChat(meetingId, userData)
 
 
 
@@ -68,7 +68,7 @@ const MeetingRoom = () => {
 
           {/* In-Meeting Chat */}
           <ChatPanel 
-          isOpen={isChatOPen}
+          isOpen={isChatOpen}
           onClose={toogleChat}
           messages={messages}
           onSendMessage={sendMessage}
@@ -102,7 +102,7 @@ const MeetingRoom = () => {
             onToggleVideo={toggleVideo}
             onToggleChat={toogleChat}
             onToggleParticipants={() => setIsParticipantOpen((prev) => !prev)}
-            isChatOpen={isChatOPen}
+            isChatOpen={isChatOpen}
             isParticipantOpen={isParticipantOpen}
             unreadCount={unreadCount}
             participantCount={1 + remoteUsers.length}
