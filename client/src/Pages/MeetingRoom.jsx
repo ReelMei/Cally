@@ -5,6 +5,8 @@ import VideoGrid from '../Components/Meeting/VideoGrid'
 import useWebRTC from '../Hooks/useWebRTC'
 import ChatPanel from '../Components/Meeting/ChatPanel'
 import { useChat } from '../Hooks/UseChat'
+import ParticipantList from '../Components/Meeting/ParticipantList'
+import ControlBar from '../Components/Meeting/ControlBar'
 
 const MeetingRoom = () => {
 
@@ -12,7 +14,7 @@ const MeetingRoom = () => {
   const navigate = useNavigate()
   const userData = dummyUser;
 
-  const [isParticipantOPen, setIsParticipantOpen] = useState(false)
+  const [isParticipantOpen, setIsParticipantOpen] = useState(false)
 
   const handleMeetingEnded = useCallback(()=> {
     navigate('/dashboard')
@@ -22,17 +24,17 @@ const MeetingRoom = () => {
   const {localStream, remoteUsers, audioEnabled, videoEnabled, toggleAudio, toggleVideo, endMeeting} = useWebRTC(meetingId, userData, handleMeetingEnded)
 
   //Initialize Room Chat
-  const {messages, sendMessage, unreadCount, isChatOPen, toogleChat} =useChat(meetingId, userData)
+  const {messages, sendMessage, unreadCount, isChatOpen, toogleChat} = useChat(meetingId, userData)
 
 
 
   const isHost = true;
 
-  const HandleLeave = () => {
+  const handleLeave = () => {
 
   }
 
-  const HandleEndMeeting = () => {
+  const handleEndMeeting = () => {
     
   }
 
@@ -66,7 +68,7 @@ const MeetingRoom = () => {
 
           {/* In-Meeting Chat */}
           <ChatPanel 
-          isOpen={isChatOPen}
+          isOpen={isChatOpen}
           onClose={toogleChat}
           messages={messages}
           onSendMessage={sendMessage}
@@ -75,11 +77,38 @@ const MeetingRoom = () => {
 
 
            {/* Participant Drawer */}
-           
+           <ParticipantList 
+           isOpen={isParticipantOpen}
+           onClose={() => setIsParticipantOpen(false)}
+           localUser={userData}
+           localAudio={audioEnabled}
+           localVideo={videoEnabled}
+           remoteUsers={remoteUsers}
+           meetingHostId={dummyUser.id}
+           />
 
-            {/* Bottom Floating */}
+
+            
 
       </div>
+
+      {/* Bottom Floating */}
+            { <ControlBar 
+            roomId={meetingId || dummyMeetingDetails.meetingId}
+            audioEnabled={audioEnabled}
+            videoEnabled={videoEnabled}
+            onToggleAudio={toggleAudio}
+            onToggleVideo={toggleVideo}
+            onToggleChat={toogleChat}
+            onToggleParticipants={() => setIsParticipantOpen((prev) => !prev)}
+            isChatOpen={isChatOpen}
+            isParticipantOpen={isParticipantOpen}
+            unreadCount={unreadCount}
+            participantCount={1 + remoteUsers.length}
+            isHost={isHost}
+            onLeave={handleLeave}
+            onEndMeeting={handleEndMeeting}
+            /> }
 
     </div>
   )

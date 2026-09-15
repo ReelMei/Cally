@@ -5,7 +5,7 @@ import { dummyInitialChatMessages } from "../assets/asset"
 export const useChat = (_roomId, user) => {
   const [messages, setMessages] = useState(dummyInitialChatMessages)
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isChatOPen, setIsChatOpen] = useState(true)
+  const [isChat0pen, setIsChatOpen] = useState(false)
 
   const sendMessage = useCallback(
     (text) => {
@@ -34,7 +34,7 @@ export const useChat = (_roomId, user) => {
     messages,
     sendMessage,
     unreadCount,
-    isChatOPen,
+    isChat0pen,
     toogleChat
   }
 

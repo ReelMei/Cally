@@ -40,7 +40,7 @@ const ChatPanel = ({isOpen, onClose, messages, onSendMessage, currentUser}) => {
           {messages.length === 0 ? (
             <div className='flex h-full flex-col items-center justify-center text-center text-slate-400 text-sm'>
               <p>No Convo Yet.</p>
-              <p className='text-xs mt-1 text-slate-400'>Click send a message and get started.</p>
+              <p className='text-xs mt-1 text-slate-400'>Click start messaging and get started.</p>
             </div>
           ) : (
             messages.map((msg, index) => {
@@ -72,7 +72,7 @@ const ChatPanel = ({isOpen, onClose, messages, onSendMessage, currentUser}) => {
          <form action="" onSubmit={handleSubmit} className='p-3 border-t border-slate-200 bg-slate-50 flex items-center gap-2'>
            <input 
            type="text" 
-           placeholder='Start Messaging'
+           placeholder='Start Messaging....'
            value={text}
            onChange={(e) => setText(e.target.value)} 
            className='flex-1 bg-white border border-primary-border/80 focus:border-primary rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all shadow-xs'/>
