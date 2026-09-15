@@ -78,7 +78,11 @@ const MeetingRoom = () => {
 
            {/* Participant Drawer */}
            <ParticipantList 
+<<<<<<< Updated upstream
            isOpen={isParticipantOpen}
+=======
+          isOpen={isParticipantOPen}
+>>>>>>> Stashed changes
            onClose={() => setIsParticipantOpen(false)}
            localUser={userData}
            localAudio={audioEnabled}
@@ -86,11 +90,31 @@ const MeetingRoom = () => {
            remoteUsers={remoteUsers}
            meetingHostId={dummyUser.id}
            />
+<<<<<<< Updated upstream
+=======
+           
+>>>>>>> Stashed changes
 
 
             
 
       </div>
+      <ControlBar 
+      roomId={meetingId || dummyMeetingDetails.meetingId}
+            audioEnabled={audioEnabled}
+            videoEnabled={videoEnabled}
+            onToggleAudio={toggleAudio}
+            onToggleVideo={toggleVideo}
+            onToggleChat={toogleChat}
+            onToggleParticipants={() => setIsParticipantOpen((prev) => !prev)}
+            isChatOpen={isChatOPen}
+            isParticipantOpen={isParticipantOPen}
+            unreadCount={unreadCount}
+            participantCount={1 + remoteUsers.length}
+            isHost={isHost}
+            onLeave={HandleLeave}
+            onEndMeeting={HandleEndMeeting}
+      />
 
       {/* Bottom Floating */}
             { <ControlBar 
