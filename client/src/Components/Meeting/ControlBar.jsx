@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { Check, Copy, MessageSquare, Mic, MicOff, Phone, PhoneOff, Users, Video, VideoOff } from 'lucide-react'
 
-const ControlBar = ({roomId, audioEnabled, videoEnabled, onToggleAudio, onToggleVideo, onToggleChat, onToggleParticipants, isChatOpen, isParticipantOpen, unreadCount, participantCount, isHost, onLeave, onEndMeeting }) => {
+const ControlBar = ({roomId, audioEnabled, videoEnabled, onToggleAudio, onToggleVideo, onToggleChat, onToggleParticipants,  isParticipantOpen, unreadCount, participantCount, isHost, onLeave, onEndMeeting, isChatOPen }) => {
 
     const [copied, setCopied] = useState(false)
 
@@ -44,9 +44,9 @@ const ControlBar = ({roomId, audioEnabled, videoEnabled, onToggleAudio, onToggle
 
         {/* Chat Toggle */}
       
-        <button onClick={onToggleChat} className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${isChatOpen ? "bg-primary text-white border-primary shadow-md shadow-primary/20" : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-800 shadow-xs"}`} title="Open Room Chat">
+        <button onClick={onToggleChat} className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${isChatOPen ? "bg-primary text-white border-primary shadow-md shadow-primary/20" : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-800 shadow-xs"}`} title="Open Room Chat">
           <MessageSquare className='w-5 h-5'/>
-          {unreadCount > 0 && !isChatOpen && (
+          {unreadCount > 0 && !isChatOPen && (
             <span className='absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs'>
               {unreadCount}
             </span>

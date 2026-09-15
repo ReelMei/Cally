@@ -24,7 +24,7 @@ const MeetingRoom = () => {
   const {localStream, remoteUsers, audioEnabled, videoEnabled, toggleAudio, toggleVideo, endMeeting} = useWebRTC(meetingId, userData, handleMeetingEnded)
 
   //Initialize Room Chat
-  const {messages, sendMessage, unreadCount, isChatOpen, toogleChat} = useChat(meetingId, userData)
+  const {messages, sendMessage, unreadCount, isChatOPen, toogleChat} = useChat(meetingId, userData)
 
 
 
@@ -68,7 +68,7 @@ const MeetingRoom = () => {
 
           {/* In-Meeting Chat */}
           <ChatPanel 
-          isOpen={isChatOpen}
+          isOpen={isChatOPen}
           onClose={toogleChat}
           messages={messages}
           onSendMessage={sendMessage}
@@ -78,11 +78,7 @@ const MeetingRoom = () => {
 
            {/* Participant Drawer */}
            <ParticipantList 
-<<<<<<< Updated upstream
-           isOpen={isParticipantOpen}
-=======
-          isOpen={isParticipantOPen}
->>>>>>> Stashed changes
+          isOpen={isParticipantOpen}
            onClose={() => setIsParticipantOpen(false)}
            localUser={userData}
            localAudio={audioEnabled}
@@ -90,32 +86,13 @@ const MeetingRoom = () => {
            remoteUsers={remoteUsers}
            meetingHostId={dummyUser.id}
            />
-<<<<<<< Updated upstream
-=======
            
->>>>>>> Stashed changes
 
 
             
 
       </div>
-      <ControlBar 
-      roomId={meetingId || dummyMeetingDetails.meetingId}
-            audioEnabled={audioEnabled}
-            videoEnabled={videoEnabled}
-            onToggleAudio={toggleAudio}
-            onToggleVideo={toggleVideo}
-            onToggleChat={toogleChat}
-            onToggleParticipants={() => setIsParticipantOpen((prev) => !prev)}
-            isChatOpen={isChatOPen}
-            isParticipantOpen={isParticipantOPen}
-            unreadCount={unreadCount}
-            participantCount={1 + remoteUsers.length}
-            isHost={isHost}
-            onLeave={HandleLeave}
-            onEndMeeting={HandleEndMeeting}
-      />
-
+     
       {/* Bottom Floating */}
             { <ControlBar 
             roomId={meetingId || dummyMeetingDetails.meetingId}
@@ -125,7 +102,7 @@ const MeetingRoom = () => {
             onToggleVideo={toggleVideo}
             onToggleChat={toogleChat}
             onToggleParticipants={() => setIsParticipantOpen((prev) => !prev)}
-            isChatOpen={isChatOpen}
+            isChatOpen={isChatOPen}
             isParticipantOpen={isParticipantOpen}
             unreadCount={unreadCount}
             participantCount={1 + remoteUsers.length}

@@ -5,11 +5,7 @@ import { dummyInitialChatMessages } from "../assets/asset"
 export const useChat = (_roomId, user) => {
   const [messages, setMessages] = useState(dummyInitialChatMessages)
   const [unreadCount, setUnreadCount] = useState(0);
-<<<<<<< Updated upstream
-  const [isChat0pen, setIsChatOpen] = useState(false)
-=======
   const [isChatOPen, setIsChatOpen] = useState(false)
->>>>>>> Stashed changes
 
   const sendMessage = useCallback(
     (text) => {
@@ -38,7 +34,7 @@ export const useChat = (_roomId, user) => {
     messages,
     sendMessage,
     unreadCount,
-    isChat0pen,
+    isChatOPen,
     toogleChat
   }
 
