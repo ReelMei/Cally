@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { dummyStats, dummyUser } from '../assets/asset'
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useUser } from '@clerk/react';
 
 const Dashboard = () => {
 
-  const user = dummyUser;
+  const {user} = useUser();
   const userName = user.fullName;
   const userEmail = user.primaryEmailAddress.emailAddress
   const navigate = useNavigate()
@@ -32,7 +33,7 @@ const Dashboard = () => {
         setIsCreating(false)
         toast.success("Room Created!")
         navigate(`/meeting/${newMeetingId}`)
-      }, 400)
+      }, 1000)
     }
 
      const handleJoinMeeting = (e) => {
@@ -50,9 +51,9 @@ const Dashboard = () => {
 
   return (
     <div className='flex-1 max-w-7xl w-full mx-auto p-6 md:p-12 flex flex-col justify-center'>
-       <div className='grid grid-cols-1 lg:grid-cols-12 gap-12 items-center'>
+       <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center'>
           {/* Left */}
-          <div className='lg:leading col-span-7 space-y-8'>
+          <div className='lg:leading col-span-7 space-y-8 w-full'>
 
             <div className='spacey-3'>
                <div className='inline-flex gap-2 px-3.5 pr-6 py-2 rounded-full bg-white/10 text-xs font-medium'>

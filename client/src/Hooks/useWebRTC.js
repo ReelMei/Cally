@@ -37,7 +37,7 @@ const useWebRTC = (_roomId, user, onMeetingEnded, _enabled = true) => {
 
     return ()=>{
       if(localStreamRef.current){
-        localStreamRef.current.getTracks().forEach(() => track.stop())
+        localStreamRef.current.getTracks().forEach((track) => track.stop())
       }
     }
 
