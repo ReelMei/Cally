@@ -3,12 +3,22 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { dummySessions } from '../assets/asset'
 import EmptySessions from '../Components/Sessions/EmptySessions'
+import SessionCard from '../Components/Sessions/SessionCard'
+import SessionModalDetails from '../Components/Sessions/SessionModalDetails'
 
 const Sessions = () => {
 
   const [sessions] = useState(dummySessions)
   const [selectedSession, setSelectedSession] = useState(null)
   const navigate = useNavigate()
+
+  const openSessionDetails = (sessionId) => {
+    const session = sessions.find((s) => s.id === sessionId || s.meetingId === sessionId)
+
+    if(session){
+      setSelectedSession(session);
+    }
+  }
 
   return (
     <div className='flex-1 max-w-7xl w-full mx-auto p-6 md:p-12'>
@@ -27,14 +37,16 @@ const Sessions = () => {
         sessions.length === 0 ? (
           <EmptySessions />
         ) : (
-          <div>
-            <p>Session Card</p>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+           {sessions.map((session) => (
+            <SessionCard key={session.id} session={session} onOpenDetails={openSessionDetails} onRejoin={(meetingId) => navigate(`/meeting/${meetingId}`) }/>
+           ))}
           </div>
         )
        }
 
         {/*Session Detail Modal */}
-        <p>Session Detail Modal</p>
+       <SessionModalDetails session={selectedSession} onClose={()=> setSelectedSession(null)}/>
 
 
 
