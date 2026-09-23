@@ -27,7 +27,7 @@ const Dashboard = () => {
       setIsCreating(true)
       const chars = "abdcefghijklmnopqrestuvwxyz1234567890"
       const seg = () => Array.from({length: 3}, ()=> chars[Math.floor(Math.random() * chars.length)]).join("");
-      const newMeetingId = `${seg()}|${seg()}|${seg()}`;
+      const newMeetingId = `${seg()}-${seg()}-${seg()}`;
 
       setTimeout(() => {
         setIsCreating(false)
