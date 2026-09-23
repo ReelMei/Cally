@@ -74,7 +74,8 @@ export const createMeeting = async (req, res) => {
          })
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('createMeeting failed:', error)
+        res.status(500).json({ error: 'Failed to create Meeting' });
     }
 }
 
@@ -114,7 +115,8 @@ export const getMeeting = async (req, res) => {
 
 
     } catch (error) {
-          res.status(500).json({ error: error.message });
+         console.error('fetchMeeting failed:', error)
+        res.status(500).json({ error: 'Failed to get Meeting' });
     }
 
 }
@@ -151,13 +153,13 @@ export const getUserSessions = async (req, res) => {
 
                 return {
                     id: m.id,
-                    meeting: m.meeting.id,
+                    meeting: m.meeting_id,
                     title: m.title,
                     status: m.status,
                     createdAt: m.created_at,
                     endedAt: m.ended_at,
                     host:{
-                    id: m.host_user_id,
+                    id: m.host_id,
                     name: m.host_name,
                     email: m.host_email,
                    },
@@ -182,7 +184,8 @@ export const getUserSessions = async (req, res) => {
         res.json({meetings: formattedMeetings})
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+       console.error('getUserSession failed:', error)
+        res.status(500).json({ error: 'Failed to getUser sessions' });
     }
 }
 
@@ -191,6 +194,7 @@ export const getUserSessions = async (req, res) => {
 export const getSessionDetails = async (req, res) => {
     try {
         const {id} = req.params;
+        const userId = req.user.id;
 
         const meetings = await sql `
                                 SELECT
@@ -207,9 +211,18 @@ export const getSessionDetails = async (req, res) => {
 
     const m = meetings[0];
 
+    if(m.host_id !== userId) {
+        const membership = await sql `
+        SELECT 1 FROM meeting_participants
+        WHERE meeting_id = ${m.id} AND user_id = ${userId} LIMIT 1`;
+      if(membership.length === 0) {
+        return res.status(404).json({ error: 'Session details not found'})
+      }
+    }
+
     const participants = await sql `
        SELECT mp.*, u.email
-          FROM meeting_participant mp
+          FROM meeting_participants mp
           LEFT JOIN users u ON mp.user_id = u.id
           WHERE mp.meeting_id = ${m.id}
     `;
@@ -219,11 +232,11 @@ export const getSessionDetails = async (req, res) => {
     SELECT id, sender_id, sender_name, text, timestamp
     FROM meeting_messages
     WHERE meeting_id = ${m.id}
-    ORDER BY timestap ASC`;
+    ORDER BY timestamp ASC`;
 
     const formatedMeeting = {
         id: m.id,
-        meeting: m.meeting.id,
+        meeting: m.meeting_id,
         title: m.title,
         status: m.status,
         createdAt: m.created_at,
@@ -248,16 +261,17 @@ export const getSessionDetails = async (req, res) => {
        }))
 
     }
-    res.json({meeting: formattedMeetings})
+    res.json({meeting: formattedMeeting})
 
 
     } catch (error) {
-         res.status(500).json({ error: error.message });
+       console.error('getSessionDetails failed:', error)
+        res.status(500).json({ error: 'Failed to get user session ' });
     }
 }
 
 
-// Get plan and meeting stats for user dashbaord
+// Get Meetings Statistics
 export const getMeetingStats = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -270,7 +284,7 @@ export const getMeetingStats = async (req, res) => {
         WHERE host_id = ${userId}
          AND created_at >= date_trunc('month', NOW())`;
 
-        const monthlyCount = parseInt(monthlyCountResult[0]?.count || '0', 5);
+        const monthlyCount = parseInt(monthlyCountResult[0]?.count || '0', 10);
         const monthlyLimit = plan === 'premium' ? null: 10;
 
         res.json({
@@ -281,6 +295,7 @@ export const getMeetingStats = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('getMeetings stats failed:', error)
+        res.status(500).json({ error: 'Failed to get meeting stats' });
     }
 }
