@@ -31,7 +31,7 @@ export const createMeeting = async (req, res) => {
 
             if(monthlyCount >= 5)
                 return res.status(403).json({
-                  error: 'Monthly Limit Reached. Free plan includes 5 meetings per month. Please upgrade to Premium for 30 meetings!',
+                  error: 'Monthly Limit Reached. Free plan includes 5 meetings per month. Please upgrade to Premium for unlimited meetings!',
                   limitReached: true,
                   monthlyCount,
                   limit: 5,
@@ -261,7 +261,7 @@ export const getSessionDetails = async (req, res) => {
        }))
 
     }
-    res.json({meeting: formattedMeeting})
+    res.json({meeting: formatedMeeting})
 
 
     } catch (error) {
@@ -285,13 +285,13 @@ export const getMeetingStats = async (req, res) => {
          AND created_at >= date_trunc('month', NOW())`;
 
         const monthlyCount = parseInt(monthlyCountResult[0]?.count || '0', 10);
-        const monthlyLimit = plan === 'premium' ? null: 10;
+        const monthlyLimit = plan === 'premium' ? null: 5;
 
         res.json({
             plan,
             monthlyCount,
             monthlyLimit,
-            maxParticipant: plan === 'premium' ? 30 : 10,
+            maxParticipant: plan === 'premium' ? 20 : 3,
         })
 
     } catch (error) {

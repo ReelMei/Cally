@@ -40,7 +40,7 @@ const Dashboard = () => {
       e.preventDefault();
       const cleanId = joinId.trim();
 
-      if (!/^[a-z]{3}(?:-[a-z]{3}){2}$/.test(cleanId)){
+      if (!/^[a-z0-9]{3}(?:-[a-z0-9]{3}){2}$/.test(cleanId)){
         toast.error("Enter a Valid Room ID");
         return;
       }
