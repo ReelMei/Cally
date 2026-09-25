@@ -9,7 +9,7 @@ const SessionCard = ({session, onOpenDetails, onRejoin}) => {
     <div className='bg-white/70  backdrop-blur rounded-3xl p-6 transition-all flex flex-col justify-between space-y-5 border-slate-100/50 shadow-xs'>
       <div className='space-y-3'>
         <div className='flex items-center justify-between'>
-            <span className='text-xs font-mono text-slate-500 font-medium bg-slate-500/5 px-2.5 py-1 rounded-md'>ID: {session.meetingId}</span>
+            <span className='text-xs font-mono text-slate-500 font-medium bg-slate-500/5 px-2.5 py-1 rounded-md'>ID: {session.meeting}</span>
             <span className={`tex-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${isEnded ? "bg-red-800 text-white" : "bg-green-500 text-black"}`}>
                 <span className={`size-1.5 rounded-full ${isEnded ? "bg-slate-400" : "bg-emerald-600"}`}/>
 
@@ -56,11 +56,11 @@ const SessionCard = ({session, onOpenDetails, onRejoin}) => {
 
        {/* Actions */}
        <div className='flex items-center justify-between gap-3 pt-2 text-black'>
-        <button onClick={() => onOpenDetails(session.id)} className='w-full font-medium bg-slate-400 rounded-full text-center text-xs transition-all py-2.5 px-4  hover:bg-primary cursor-pointer '>
+        <button onClick={() => onOpenDetails(session.meeting)} className='w-full font-medium bg-slate-400 rounded-full text-center text-xs transition-all py-2.5 px-4  hover:bg-primary cursor-pointer '>
           View Details
         </button>
         {!isEnded && (
-          <button onClick={() => onRejoin(session.meetingId)} className='text-blue-700 font-bold w-full bg-slate-400/25 hover:bg-black hover:text-white backdrop-blur-2xl py-2.5 px-4 rounded-full shadow-xs text-center '>
+          <button onClick={() => onRejoin(session.meeting)} className='text-blue-700 font-bold w-full bg-slate-400/25 hover:bg-black hover:text-white backdrop-blur-2xl py-2.5 px-4 rounded-full shadow-xs text-center '>
             Rejoin
           </button>
         )}

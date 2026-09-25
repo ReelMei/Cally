@@ -1,21 +1,68 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { dummyMeetingDetails, dummyUser } from '../assets/asset'
 import VideoGrid from '../Components/Meeting/VideoGrid'
-import useWebRTC from '../Hooks/useWebRTC'
+import {useWebRTC} from '../Hooks/useWebRTC'
 import ChatPanel from '../Components/Meeting/ChatPanel'
 import { useChat } from '../Hooks/UseChat'
 import ParticipantList from '../Components/Meeting/ParticipantList'
 import ControlBar from '../Components/Meeting/ControlBar'
 import toast from 'react-hot-toast'
+import { useAuth, useUser } from '@clerk/react'
+import api from '../Config/api'
+import Loader from '../Components/Loader'
 
 const MeetingRoom = () => {
 
   const {meetingId} = useParams()
   const navigate = useNavigate()
-  const userData = dummyUser;
+  const { user } = useUser()
+  const { getToken } = useAuth()
 
+  
+  const userData = useMemo(() => {
+    if(!user) return null;
+    return {
+      id: user.id,
+      name: user.fullName || user.firstName || user.primaryEmailAddress?.emailAddress?.split('@')[0] || 'user', 
+      email: user.primaryEmailAddress?.emailAddress || '',
+      image: user.imageUrl || ''
+    }
+  }, [user?.id, user?.fullName, user?.firstName, user?.primaryEmailAddress?.emailAddress, user?.imageUrl])
+
+
+  const [meeting, setMeeting] = useState(null)
+  const [loadingMeeting, setLoadingMeeting] = useState(true)
   const [isParticipantOpen, setIsParticipantOpen] = useState(false)
+
+  //Fetch Meeting details to verify Validity before enabling webRTC camera access.
+  useEffect(() => {
+    const fetchMeeting = async () => {
+      try {
+        const token = await getToken();
+        const res = await api.get(`/api/meetings/${meetingId}`, {
+          headers: {Authorization: `Bearer ${token}`}
+        })
+
+        if(res.data.meeting.status === 'ended'){
+          toast.error('This Room Session is Ended');
+          navigate('/dashboard');
+          return;
+        }
+        setMeeting(res.data.meeting)
+
+      } catch (error) {
+        const errorMsg = error.response?.data?.error || 'Meeting not found';
+        toast.error(errorMsg);
+        navigate('/dashbaord')
+      }finally {
+        setLoadingMeeting(false)
+      }
+    }
+    fetchMeeting();
+  }, [meetingId, navigate])
+
+
 
   const handleMeetingEnded = useCallback(()=> {
     navigate('/dashboard')
@@ -29,7 +76,9 @@ const MeetingRoom = () => {
 
 
 
-  const isHost = true;
+  const hostId = meeting?.host?.id || meeting?.host;
+  const isHost = Boolean(userData?.id || hostId && hostId.toString() === userData.id.toString())
+
 
   const handleLeave = () => {
     toast("You've Sucessfully left the room/");
@@ -40,6 +89,10 @@ const MeetingRoom = () => {
     endMeeting();
     toast("Room Session Ended, Cheers!")
     navigate("/dashboard")
+  }
+
+  if(loadingMeeting){
+    return <Loader text='Joining meeting room'/>
   }
 
 
