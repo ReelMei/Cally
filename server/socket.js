@@ -176,6 +176,16 @@ export function setupSocketIO(io){
 
         // Host ends meeting for all via End Meeting Button
         socket.on('end-meeting', async ({ roomId}) => {
+
+            if (!currentUser?.isHost) {
+            socket.emit('room-error', {
+            message: 'Only the host can end the meeting'
+        });
+
+        return;
+    }
+
+
           try {
             await sql `
             UPDATE meetings
