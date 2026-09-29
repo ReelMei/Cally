@@ -73,99 +73,143 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
         };
 
         // Handle incoming remote stream tracks
-        peer.ontrack = (event) => {
-            const remoteStream = event.streams[0];
-            setRemoteUsers((prev) => {
-                const existingIndex = prev.findIndex((u) => u.socketId === targetSocketId);
-                if (existingIndex > -1) {
-                    const updated = [...prev];
-                    updated[existingIndex] = {
-                        ...updated[existingIndex],
-                        stream: remoteStream,
-                    };
-                    return updated;
-                } else {
-                    return [
-                        ...prev,
-                        {
-                            socketId: targetSocketId,
-                            userId: targetUser?.userId,
-                            userName: targetUser?.userName || "Participant",
-                            stream: remoteStream,
-                            audioEnabled: targetUser?.audioEnabled ?? true,
-                            videoEnabled: targetUser?.videoEnabled ?? true,
-                        },
-                    ];
-                }
-            });
-        };
+       peer.ontrack = (event) => {
+    console.log("🎥 REMOTE TRACK RECEIVED:", {
+        targetSocketId,
+        kind: event.track.kind,
+        stream: event.streams[0],
+    });
+
+    const remoteStream = event.streams[0];
+
+    setRemoteUsers((prev) => {
+        const existingIndex = prev.findIndex(
+            (u) => u.socketId === targetSocketId
+        );
+
+        if (existingIndex > -1) {
+            const updated = [...prev];
+
+            updated[existingIndex] = {
+                ...updated[existingIndex],
+                stream: remoteStream,
+            };
+
+            return updated;
+        }
+
+        return [
+            ...prev,
+            {
+                socketId: targetSocketId,
+                userId: targetUser?.userId,
+                userName: targetUser?.userName || "Participant",
+                stream: remoteStream,
+                audioEnabled: targetUser?.audioEnabled ?? true,
+                videoEnabled: targetUser?.videoEnabled ?? true,
+            },
+        ];
+    });
+};
+
+        peer.onconnectionstatechange = () => {
+    console.log(
+        `🔗 Peer ${targetSocketId} connection state:`,
+        peer.connectionState
+    );
+};
+
+peer.oniceconnectionstatechange = () => {
+    console.log(
+        `🧊 Peer ${targetSocketId} ICE state:`,
+        peer.iceConnectionState
+    );
+};
 
         peersRef.current.set(targetSocketId, peer);
         return peer;
     }, []);
 
     // Main WebRTC & Socket signaling setup effect
-    useEffect(() => {
-        if (!roomId || !user || !enabled) return;
+useEffect(() => {
+    if (!roomId || !user || !enabled) return;
 
-        let isMounted = true;
+    let isMounted = true;
 
-        const startSession = async () => {
-            const stream = await initLocalStream();
+    const startSession = async () => {
+        const stream = await initLocalStream();
 
-            const hasVideo = stream.getVideoTracks().length > 0;
-            const hasAudio = stream.getAudioTracks().length > 0;
+        if (!stream || !isMounted) return;
 
-          setVideoEnabled(hasVideo);
-          setAudioEnabled(hasAudio);
+        const hasVideo = stream.getVideoTracks().length > 0;
+        const hasAudio = stream.getAudioTracks().length > 0;
 
+        setVideoEnabled(hasVideo);
+        setAudioEnabled(hasAudio);
 
-           if (!isMounted || !stream) return;
+        // ------------------------------------------------
+        // SOCKET EVENT LISTENERS
+        // Register these BEFORE joining the room.
+        // ------------------------------------------------
 
+        socket.on("all-users", async (existingUsers) => {
+            console.log("ALL USERS:", existingUsers);
 
-            if (!socket.connected) {
-                socket.connect();
-            }
+            for (const existingUser of existingUsers) {
+                const peer = createPeerConnection(
+                    existingUser.socketId,
+                    existingUser
+                );
 
-            // Emit join room
-            socket.emit("join-room", {
-                roomId,
-                user,
-                audioEnabled: hasAudio,
-                videoEnabled: hasVideo,
-            });
-
-            // 1. Receive all existing users in room
-            socket.on("all-users", (existingUsers) => {
-                existingUsers.forEach((existingUser) => {
-                    const peer = createPeerConnection(existingUser.socketId, existingUser);
-
-                    // Create offer to existing user
-                    peer.createOffer()
-                        .then((offer) => peer.setLocalDescription(offer))
-                        .then(() => {
-                            socket.emit("offer", {
-                                targetSocketId: existingUser.socketId,
-                                callerSocketId: socket.id,
-                                sdp: peer.localDescription,
-                            });
-                        })
-                        .catch((err) => console.error("Error creating offer:", err));
-                });
-            });
-
-            // 2. Someone new joined -> add to state
-            socket.on("user-joined", (newUser) => {
-                toast(`${newUser.userName} joined the meeting`, { icon: "👋" });
-                createPeerConnection(newUser.socketId, newUser);
-            });
-
-            // 3. Receive offer from caller
-            socket.on("offer", async ({ callerSocketId, sdp, callerUser }) => {
-                const peer = createPeerConnection(callerSocketId, callerUser);
                 try {
-                    await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+                    const offer = await peer.createOffer();
+
+                    await peer.setLocalDescription(offer);
+
+                    socket.emit("offer", {
+                        targetSocketId: existingUser.socketId,
+                        callerSocketId: socket.id,
+                        sdp: peer.localDescription,
+                    });
+
+                } catch (error) {
+                    console.error("Error creating offer:", error);
+                }
+            }
+        });
+
+        socket.on("user-joined", (newUser) => {
+            console.log("USER JOINED:", newUser);
+
+            toast(`${newUser.userName} joined the meeting`, {
+                icon: "👋",
+            });
+
+            // We DON'T create the offer here.
+            // The newcomer will create the offer.
+            createPeerConnection(
+                newUser.socketId,
+                newUser
+            );
+        });
+
+        socket.on(
+            "offer",
+            async ({ callerSocketId, sdp, callerUser }) => {
+                console.log("OFFER RECEIVED FROM:", callerSocketId);
+
+                const peer = createPeerConnection(
+                    callerSocketId,
+                    callerUser
+                );
+
+                try {
+                    await peer.setRemoteDescription(
+                        new RTCSessionDescription(sdp)
+                    );
+
                     const answer = await peer.createAnswer();
+
                     await peer.setLocalDescription(answer);
 
                     socket.emit("answer", {
@@ -173,96 +217,199 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                         responderSocketId: socket.id,
                         sdp: peer.localDescription,
                     });
-                } catch (err) {
-                    console.error("Error handling offer:", err);
+
+                } catch (error) {
+                    console.error(
+                        "Error handling offer:",
+                        error
+                    );
                 }
-            });
+            }
+        );
 
-            // 4. Receive answer from responder
-            socket.on("answer", async ({ responderSocketId, sdp }) => {
-                const peer = peersRef.current.get(responderSocketId);
-                if (peer) {
-                    try {
-                        await peer.setRemoteDescription(new RTCSessionDescription(sdp));
-                    } catch (err) {
-                        console.error("Error setting remote description from answer:", err);
-                    }
+        socket.on(
+            "answer",
+            async ({ responderSocketId, sdp }) => {
+                console.log(
+                    "ANSWER RECEIVED FROM:",
+                    responderSocketId
+                );
+
+                const peer =
+                    peersRef.current.get(responderSocketId);
+
+                if (!peer) {
+                    console.warn(
+                        "No peer found for answer:",
+                        responderSocketId
+                    );
+                    return;
                 }
-            });
 
-            // 5. Receive ICE candidate
-            socket.on("ice-candidate", async ({ senderSocketId, candidate }) => {
-                const peer = peersRef.current.get(senderSocketId);
-                if (peer && candidate) {
-                    try {
-                        await peer.addIceCandidate(new RTCIceCandidate(candidate));
-                    } catch (err) {
-                        console.error("Error adding ICE candidate:", err);
-                    }
+                try {
+                    await peer.setRemoteDescription(
+                        new RTCSessionDescription(sdp)
+                    );
+
+                } catch (error) {
+                    console.error(
+                        "Error setting remote description:",
+                        error
+                    );
                 }
-            });
+            }
+        );
 
-            // 6. Handle peer audio toggle
-            socket.on("user-toggled-audio", ({ socketId, audioEnabled }) => {
-                setRemoteUsers((prev) => prev.map((u) => (u.socketId === socketId ? { ...u, audioEnabled } : u)));
-            });
+        socket.on(
+            "ice-candidate",
+            async ({ senderSocketId, candidate }) => {
+                console.log(
+                    "ICE CANDIDATE FROM:",
+                    senderSocketId
+                );
 
-            // 7. Handle peer video toggle
-            socket.on("user-toggled-video", ({ socketId, videoEnabled }) => {
-                setRemoteUsers((prev) => prev.map((u) => (u.socketId === socketId ? { ...u, videoEnabled } : u)));
-            });
+                const peer =
+                    peersRef.current.get(senderSocketId);
 
-            // 8. Handle peer left
-            socket.on("user-left", ({ socketId, user: leftUser }) => {
+                if (!peer || !candidate) return;
+
+                try {
+                    await peer.addIceCandidate(
+                        new RTCIceCandidate(candidate)
+                    );
+
+                } catch (error) {
+                    console.error(
+                        "Error adding ICE candidate:",
+                        error
+                    );
+                }
+            }
+        );
+
+        socket.on(
+            "user-toggled-audio",
+            ({ socketId, audioEnabled }) => {
+                setRemoteUsers((prev) =>
+                    prev.map((u) =>
+                        u.socketId === socketId
+                            ? { ...u, audioEnabled }
+                            : u
+                    )
+                );
+            }
+        );
+
+        socket.on(
+            "user-toggled-video",
+            ({ socketId, videoEnabled }) => {
+                setRemoteUsers((prev) =>
+                    prev.map((u) =>
+                        u.socketId === socketId
+                            ? { ...u, videoEnabled }
+                            : u
+                    )
+                );
+            }
+        );
+
+        socket.on(
+            "user-left",
+            ({ socketId, user: leftUser }) => {
                 if (leftUser) {
-                    toast(`${leftUser.userName} left the meeting`);
+                    toast(
+                        `${leftUser.userName} left the meeting`
+                    );
                 }
-                const peer = peersRef.current.get(socketId);
+
+                const peer =
+                    peersRef.current.get(socketId);
+
                 if (peer) {
                     peer.close();
                     peersRef.current.delete(socketId);
                 }
-                setRemoteUsers((prev) => prev.filter((u) => u.socketId !== socketId));
-            });
 
-            // 9. Handle meeting ended by host
-            socket.on("meeting-ended", ({ message }) => {
-                toast.error(message || "This meeting has ended");
+                setRemoteUsers((prev) =>
+                    prev.filter(
+                        (u) => u.socketId !== socketId
+                    )
+                );
+            }
+        );
+
+        socket.on(
+            "meeting-ended",
+            ({ message }) => {
+                toast.error(
+                    message || "This meeting has ended"
+                );
+
                 if (onMeetingEnded) {
                     onMeetingEnded(message);
                 }
-            });
-        };
-
-        startSession();
-
-        // Cleanup on leave/unmount
-        return () => {
-            isMounted = false;
-
-            // Stop local tracks
-            if (localStreamRef.current) {
-                localStreamRef.current.getTracks().forEach((track) => track.stop());
             }
+        );
 
-            // Close all peer connections
-            peersRef.current.forEach((peer) => peer.close());
-            peersRef.current.clear();
+        // ------------------------------------------------
+        // CONNECT SOCKET
+        // ------------------------------------------------
 
-            // Off socket listeners
-            socket.off("all-users");
-            socket.off("user-joined");
-            socket.off("offer");
-            socket.off("answer");
-            socket.off("ice-candidate");
-            socket.off("user-toggled-audio");
-            socket.off("user-toggled-video");
-            socket.off("user-left");
-            socket.off("meeting-ended");
+        if (!socket.connected) {
+            socket.connect();
+        }
 
-            socket.disconnect();
-        };
-    }, [roomId, user?.id, enabled, createPeerConnection, initLocalStream, onMeetingEnded]);
+        // ------------------------------------------------
+        // JOIN ROOM
+        // This MUST happen AFTER listeners are registered.
+        // ------------------------------------------------
+
+        socket.emit("join-room", {
+            roomId,
+            user,
+            audioEnabled: hasAudio,
+            videoEnabled: hasVideo,
+        });
+    };
+
+    startSession();
+
+    return () => {
+        isMounted = false;
+
+        if (localStreamRef.current) {
+            localStreamRef.current
+                .getTracks()
+                .forEach((track) => track.stop());
+        }
+
+        peersRef.current.forEach((peer) => {
+            peer.close();
+        });
+
+        peersRef.current.clear();
+
+        socket.off("all-users");
+        socket.off("user-joined");
+        socket.off("offer");
+        socket.off("answer");
+        socket.off("ice-candidate");
+        socket.off("user-toggled-audio");
+        socket.off("user-toggled-video");
+        socket.off("user-left");
+        socket.off("meeting-ended");
+
+        socket.disconnect();
+    };
+
+}, [
+    roomId,
+    user?.id,
+    enabled,
+    createPeerConnection,
+    initLocalStream,
+    onMeetingEnded
+]);
 
     // Toggle local mic
     const toggleAudio = () => {
