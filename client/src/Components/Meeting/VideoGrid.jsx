@@ -5,7 +5,7 @@ const VideoGrid = ({localStream, localUser, remoteUsers, audioEnabled, videoEnab
 
     const totalPartcipant = 1 + remoteUsers.length 
 
-    // Determine grid columns dynamically
+    // Determine grid columns dynamically.
 
     const getGridClass = () => {
         if (totalPartcipant === 1) return "grid-cols-1 max-w-4xl";
