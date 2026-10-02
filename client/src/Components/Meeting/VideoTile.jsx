@@ -1,7 +1,7 @@
 import { MicOff, User, VideoOff } from 'lucide-react';
 import React, { useEffect, useRef } from 'react'
 
-const VideoTile = ({stream, name, isLocal = false, audioEnabled = true, videoEnabled = true}) => {
+const VideoTile = ({stream, name, isLocal = false, isHost= false, audioEnabled = true, videoEnabled = true}) => {
 
     const videoRef = useRef(null)
 
@@ -35,7 +35,7 @@ const VideoTile = ({stream, name, isLocal = false, audioEnabled = true, videoEna
       <div className='absolute bottom-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none'>
         <div className='flex items-center gap-2 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 text-xs font-medium text-white shadow-md'>
           <span>
-            {name} {isLocal ? "(Host)" : ""}
+            {name} {isHost ? "(Host)" : ""}
           </span>
           {!audioEnabled && (
             <span className='p-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/40'>

@@ -1,7 +1,7 @@
 import React from 'react'
 import VideoTile from './VideoTile';
 
-const VideoGrid = ({localStream, localUser, remoteUsers, audioEnabled, videoEnabled}) => {
+const VideoGrid = ({localStream, isHost, localUser, remoteUsers, audioEnabled, videoEnabled}) => {
 
     const totalPartcipant = 1 + remoteUsers.length 
 

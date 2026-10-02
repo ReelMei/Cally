@@ -77,7 +77,7 @@ const MeetingRoom = () => {
 
 
   const hostId = meeting?.host?.id || meeting?.host;
-  const isHost = Boolean(userData?.id || hostId && hostId.toString() === userData.id.toString())
+  const isHost = Boolean(userData?.id && hostId && hostId.toString() === userData.id.toString())
 
 
   const handleLeave = () => {
@@ -120,6 +120,7 @@ const MeetingRoom = () => {
          remoteUsers={remoteUsers}
          audioEnabled={audioEnabled}
          videoEnabled={videoEnabled}
+         isHost={isHost}
          />
 
 
@@ -141,7 +142,7 @@ const MeetingRoom = () => {
            localAudio={audioEnabled}
            localVideo={videoEnabled}
            remoteUsers={remoteUsers}
-           meetingHostId={dummyUser.id}
+           meetingHostId={hostId}
            />
            
 
