@@ -3,7 +3,7 @@ import "dotenv/config"
 import cors from 'cors'
 import http from 'http'
 import cookieParser from "cookie-parser";
-import { initDB } from "./Config/db.js";
+import { initDB, testDB } from "./Config/db.js";
 import { clerkMiddleware } from '@clerk/express'
 import { handleClerkWebhook } from "./Controllers/webhookController.js";
 import meetingRouter from "./Routes/meetingRoutes.js";
@@ -17,6 +17,7 @@ const server = http.createServer(app)
 
 //Neon Connection and Table Initialization
 initDB()
+testDB()
 
 const allowedOrigins = process.env.ORIGINS.split(",").map(origin => origin.trim());
 app.use(cors({origin: allowedOrigins, credentials: true}))

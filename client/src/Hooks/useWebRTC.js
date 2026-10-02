@@ -4,12 +4,34 @@ import toast from "react-hot-toast";
 
 const ICE_SERVERS = {
     iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
-        { urls: "stun:stun2.l.google.com:19302" },
+        // STUN
+        {
+            urls: "stun:stun.l.google.com:19302",
+        },
+
+        // TURN
+        {
+            urls: "turn:global.relay.metered.ca:80",
+            username: "9ac88b1b4cb38ff7b81f8504",
+            credential: "0VI4C2BgnkkVDzMV",
+        },
+        {
+            urls: "turn:global.relay.metered.ca:80?transport=tcp",
+            username: "9ac88b1b4cb38ff7b81f8504",
+            credential: "0VI4C2BgnkkVDzMV",
+        },
+        {
+            urls: "turn:global.relay.metered.ca:443",
+            username: "9ac88b1b4cb38ff7b81f8504",
+            credential: "0VI4C2BgnkkVDzMV",
+        },
+        {
+            urls: "turns:global.relay.metered.ca:443?transport=tcp",
+            username: "9ac88b1b4cb38ff7b81f8504",
+            credential: "0VI4C2BgnkkVDzMV",
+        },
     ],
 };
-
 export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
     const [localStream, setLocalStream] = useState(null);
     const [remoteUsers, setRemoteUsers] = useState([]); // Array of { socketId, userId, userName, stream, audioEnabled, videoEnabled }
