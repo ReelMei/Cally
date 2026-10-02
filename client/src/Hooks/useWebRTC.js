@@ -310,7 +310,7 @@ useEffect(() => {
         );
 
         socket.on(
-            "user-toggled-audio",
+            "user-toggle-audio",
             ({ socketId, audioEnabled }) => {
                 setRemoteUsers((prev) =>
                     prev.map((u) =>
@@ -323,7 +323,7 @@ useEffect(() => {
         );
 
         socket.on(
-            "user-toggled-video",
+            "user-toggle-video",
             ({ socketId, videoEnabled }) => {
                 setRemoteUsers((prev) =>
                     prev.map((u) =>
