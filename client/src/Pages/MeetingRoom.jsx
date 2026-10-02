@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { dummyMeetingDetails, dummyUser } from '../assets/asset'
+import { dummyMeetingDetails } from '../assets/asset'
 import VideoGrid from '../Components/Meeting/VideoGrid'
 import {useWebRTC} from '../Hooks/useWebRTC'
 import ChatPanel from '../Components/Meeting/ChatPanel'
@@ -121,6 +121,7 @@ const MeetingRoom = () => {
          audioEnabled={audioEnabled}
          videoEnabled={videoEnabled}
          isHost={isHost}
+         meetingHostId={hostId}
          />
 
 
