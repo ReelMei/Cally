@@ -17,9 +17,9 @@ const Navbar = () => {
      {/* Logo and Nav LInks */}
      <div className='flex items-center gap-6'>
       <Link to='/dashboard' className='flex items-center gap-1.5'>
-       <img src="/logo.svg" alt="cally logo" className='size-6.5 ' />
+       <img src="/logo.svg" alt="callive logo" className='size-6.5 ' />
 
-        <span className='text-2xl font-bold tracking-tight text-slate-800 flex items-center'>Cally</span>
+        <span className='text-2xl font-bold tracking-tight text-slate-800 flex items-center'>Callive</span>
       </Link>
 
       {isSignedIn && (

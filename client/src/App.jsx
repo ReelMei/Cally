@@ -8,11 +8,13 @@ import Sessions from './Pages/Sessions'
 import Pricing from './Pages/Pricing'
 import MeetingRoom from './Pages/MeetingRoom'
 import ProtectedRoute from './Components/ProtectedRoute'
+import InstallAppPrompt from './Components/InstallAppPrompt'
 
 
 const App = () => {
   return (
     <>
+      <InstallAppPrompt />
       <Toaster />
       <Routes>
 

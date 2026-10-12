@@ -15,9 +15,9 @@ const Login = ({mode = "login"}) => {
     <div className="min-h-screen w-full bg-[url('/mylogin_bg.jpg')] bg-cover bg-no-repeat text-slate-800 p-4 md:p-6 lg:p-8 flex items-center justify-center font-sans">
       <div className='w-full flex justify-center py-2'>
         {isRegister ? (
-          <SignUp routing='path' path='/register' signInUrl='/login' fallbackRedirectUrl='/dashboard'/>
+          <SignUp routing='path' path='/register' signInUrl='/login' forceRedirectUrl='/dashboard?install=1'/>
         ) : (
-          <SignIn  routing='path' path='/login' signUpUrl='/register' fallbackRedirectUrl='/dashboard'/>
+          <SignIn  routing='path' path='/login' signUpUrl='/register' fallbackRedirectUrl='/dashboard?install=1'/>
         )}
       </div>
   

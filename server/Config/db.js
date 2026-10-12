@@ -60,3 +60,13 @@ export async function initDB() {
         throw error;
     }
 }
+
+
+export async function testDB() {
+    try {
+        const result = await sql`SELECT NOW()`;
+        console.log("✅ Database test successful:", result);
+    } catch (error) {
+        console.error("❌ Database test failed:", error);
+    }
+}
