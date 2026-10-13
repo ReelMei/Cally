@@ -11,8 +11,8 @@ const Navbar = () => {
   const userName = user?.fullName || user?.firstName || user?.primaryEmailAddress?.emailAddress?.split('@')[0] || "user";
 
   return (
-    <div>
-     <div className='w-full max-w-305 mx-auto bg-white/90 backdrop-blur xl:rounded-b-xl sticky top-0 z-40 px-6 py-4 flex items-center justify-between border border-slate-200'>
+    <div className="sticky top-0 z-50 w-full">
+     <div className="w-full max-w-305 mx-auto bg-white/90 backdrop-blur xl:rounded-b-xl px-4 sm:px-6 py-4 flex items-center justify-between border border-slate-200">
 
      {/* Logo and Nav LInks */}
      <div className='flex items-center gap-6'>
