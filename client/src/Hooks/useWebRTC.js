@@ -1,37 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { socket } from "../Config/socket.js";
+import api from "../Config/api.js";
 import toast from "react-hot-toast";
 
-const ICE_SERVERS = {
-    iceServers: [
-        // STUN
-        {
-            urls: "stun:stun.l.google.com:19302",
-        },
-
-        // TURN
-        {
-            urls: "turn:global.relay.metered.ca:80",
-            username: "9ac88b1b4cb38ff7b81f8504",
-            credential: "0VI4C2BgnkkVDzMV",
-        },
-        {
-            urls: "turn:global.relay.metered.ca:80?transport=tcp",
-            username: "9ac88b1b4cb38ff7b81f8504",
-            credential: "0VI4C2BgnkkVDzMV",
-        },
-        {
-            urls: "turn:global.relay.metered.ca:443",
-            username: "9ac88b1b4cb38ff7b81f8504",
-            credential: "0VI4C2BgnkkVDzMV",
-        },
-        {
-            urls: "turns:global.relay.metered.ca:443?transport=tcp",
-            username: "9ac88b1b4cb38ff7b81f8504",
-            credential: "0VI4C2BgnkkVDzMV",
-        },
-    ],
-};
 export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
     const [localStream, setLocalStream] = useState(null);
     const [remoteUsers, setRemoteUsers] = useState([]); // Array of { socketId, userId, userName, stream, audioEnabled, videoEnabled }
@@ -40,6 +11,7 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
 
     const peersRef = useRef(new Map()); // socketId -> RTCPeerConnection
     const localStreamRef = useRef(null);
+    const iceServersRef = useRef(null);
 
     // Initialize local media stream
     const initLocalStream = useCallback(async () => {
@@ -74,7 +46,7 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
             return peersRef.current.get(targetSocketId);
         }
 
-        const peer = new RTCPeerConnection(ICE_SERVERS);
+        const peer = new RTCPeerConnection({ iceServers: iceServersRef.current });
 
         // Add local tracks to peer connection
         if (localStreamRef.current) {
@@ -159,6 +131,25 @@ useEffect(() => {
     let isMounted = true;
 
     const startSession = async () => {
+        try {
+            const response = await api.get('/api/turn/credentials');
+            const turnIceServers = response.data?.iceServers;
+
+            if (!Array.isArray(turnIceServers) || turnIceServers.length === 0) {
+                throw new Error('TURN credentials response did not include ICE servers');
+            }
+
+            if (!isMounted) return;
+            iceServersRef.current = [
+                { urls: 'stun:stun.l.google.com:19302' },
+                ...turnIceServers,
+            ];
+        } catch (error) {
+            console.error('Could not load Coturn credentials:', error);
+            toast.error('Could not prepare the meeting connection. Please try again.');
+            return;
+        }
+
         const stream = await initLocalStream();
 
         if (!stream || !isMounted) return;
@@ -410,6 +401,7 @@ useEffect(() => {
         });
 
         peersRef.current.clear();
+        iceServersRef.current = null;
 
         socket.off("all-users");
         socket.off("user-joined");
