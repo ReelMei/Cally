@@ -7,6 +7,7 @@ import { initDB, testDB } from "./Config/db.js";
 import { clerkMiddleware } from '@clerk/express'
 import { handleClerkWebhook } from "./Controllers/webhookController.js";
 import meetingRouter from "./Routes/meetingRoutes.js";
+import turnRouter from "./Routes/turnRoutes.js";
 import { Server } from "socket.io";
 import { setupSocketIO } from "./socket.js";
 
@@ -30,6 +31,7 @@ app.use(clerkMiddleware())
 
 app.get("/", (req, res) => res.send("API is live"))
 app.use('/api/meetings', meetingRouter)
+app.use('/api/turn', turnRouter)
 
 const io = new Server(server, {
     cors: {origin: allowedOrigins, credentials: true}
