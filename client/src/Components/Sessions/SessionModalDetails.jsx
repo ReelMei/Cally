@@ -19,7 +19,7 @@ const SessionModalDetails = ({session, onClose}) => {
         <div className='p-6 border-b border-slate-100 flex items-center justify-between'>
             <div>
                 <div className='flex items-center gap-2'>
-                    <span className='text-xs font-mono text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-md'>ID: {session.meetingId}</span>
+                    <span className='text-xs font-mono text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-md'>ID: {session.meeting}</span>
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                         isEnded ? "bg-red-500 text-white " : "bg-emerald-500 text-emerald-800"
                     }`}>

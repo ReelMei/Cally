@@ -291,7 +291,7 @@ export const getMeetingStats = async (req, res) => {
             plan,
             monthlyCount,
             monthlyLimit,
-            maxParticipant: plan === 'premium' ? 20 : 3,
+            maxParticipants: plan === 'premium' ? 20 : 5,
         })
 
     } catch (error) {

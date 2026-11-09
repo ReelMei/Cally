@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { dummyMeetingDetails } from '../assets/asset'
 import VideoGrid from '../Components/Meeting/VideoGrid'
 import {useWebRTC} from '../Hooks/useWebRTC'
 import ChatPanel from '../Components/Meeting/ChatPanel'
@@ -54,7 +53,7 @@ const MeetingRoom = () => {
       } catch (error) {
         const errorMsg = error.response?.data?.error || 'Meeting not found';
         toast.error(errorMsg);
-        navigate('/dashbaord')
+        navigate('/dashboard')
       }finally {
         setLoadingMeeting(false)
       }
@@ -69,7 +68,7 @@ const MeetingRoom = () => {
   }, [navigate])
 
   //Initialize WebRTC
-  const {localStream, remoteUsers, audioEnabled, videoEnabled, toggleAudio, toggleVideo, endMeeting} = useWebRTC(meetingId, userData, handleMeetingEnded)
+  const {localStream, remoteUsers, audioEnabled, videoEnabled, toggleAudio, toggleVideo, endMeeting} = useWebRTC(meetingId, userData, handleMeetingEnded, Boolean(meeting))
 
   //Initialize Room Chat
   const {messages, sendMessage, unreadCount, isChatOpen, toogleChat} = useChat(meetingId, userData)
@@ -81,11 +80,12 @@ const MeetingRoom = () => {
 
 
   const handleLeave = () => {
-    toast("You've Sucessfully left the room/");
+    toast("You've successfully left the room");
     navigate('/dashboard')
   }
 
   const handleEndMeeting = () => {
+    if(!window.confirm('End this meeting for everyone?')) return;
     endMeeting();
     toast("Room Session Ended, Cheers!")
     navigate("/dashboard")
@@ -103,7 +103,7 @@ const MeetingRoom = () => {
      <div className='w-full bg-white/90 backdrop-blur px-6 py-3 border-b border-slate-300 flex items-center justify-between z-30 shadow-x'>
        <div className='flex items-center gap-3'>
          <h2 className='text-black tracking-tight font-bold text-xl'>
-          {dummyMeetingDetails.title} ({meetingId || dummyMeetingDetails.meetingId})
+          {meeting?.title || 'Meeting'} ({meetingId})
          </h2>
          <span className='size-1.5 rounded-full bg-emerald-400 animate-pulse'>
            
@@ -154,7 +154,7 @@ const MeetingRoom = () => {
      
       {/* Bottom Floating */}
             { <ControlBar 
-            roomId={meetingId || dummyMeetingDetails.meetingId}
+            roomId={meetingId}
             audioEnabled={audioEnabled}
             videoEnabled={videoEnabled}
             onToggleAudio={toggleAudio}
